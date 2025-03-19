@@ -20,6 +20,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.room.Room
+import ca.uqac.stories.data.source.StoriesDao
+import ca.uqac.stories.data.source.StoriesDatabase
 import ca.uqac.stories.presentation.list.ListStoriesScreen
 import ca.uqac.stories.presentation.list.ListStoriesViewModel
 import ca.uqac.stories.presentation.addedit.AddEditStoryScreen
@@ -28,6 +31,15 @@ import ca.uqac.stories.ui.theme.StoriesTheme
 import ca.uqac.stories.navigation.Screen
 
 class MainActivity : ComponentActivity() {
+
+    private val db by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            StoriesDatabase::class.java,
+            StoriesDatabase.DATABASE_NAME
+        ).build()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -51,13 +63,15 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             composable(route = Screen.StoriesListScreen.route) {
-                                val stories = viewModel<ListStoriesViewModel>()
-                                ListStoriesScreen(navController, stories)
+                                val storiesViewModel = viewModel<ListStoriesViewModel> {
+                                    ListStoriesViewModel(db.dao)
+                                }
+                                ListStoriesScreen(navController, storiesViewModel)
                             }
                             composable(
                                 route = Screen.AddEditStoryScreen.route + "?storyId={storyId}",
                                 arguments = listOf(
-                                    navArgument(name = "storyId") {
+                                    navArgument(name = "storyId" ) {
                                         type = NavType.IntType
                                         defaultValue = -1
                                     }
@@ -65,7 +79,7 @@ class MainActivity : ComponentActivity() {
                             ) { navBackStackEntry ->
                                 val storyId = navBackStackEntry.arguments?.getInt("storyId") ?: -1
                                 val story = viewModel<AddEditStoryViewModel>() {
-                                    AddEditStoryViewModel(storyId)
+                                    AddEditStoryViewModel(db.dao, storyId)
                                 }
                                 AddEditStoryScreen(navController, story)
                             }

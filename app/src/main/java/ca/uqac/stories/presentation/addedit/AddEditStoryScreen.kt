@@ -40,11 +40,11 @@ fun AddEditStoryScreen(
     navController: NavController,
     viewModel: AddEditStoryViewModel
 ) {
+    val story = viewModel.story.value
+    val isNewStory = viewModel.isNewStory.value
+
     Scaffold(
         floatingActionButton = {
-            val story = viewModel.story.value
-            val isNewStory = remember { story.title.isEmpty() && story.description.isEmpty() }
-
             FloatingActionButton(
                 onClick = {
                     viewModel.onEvent(AddEditStoryEvent.SaveStory)
@@ -60,9 +60,6 @@ fun AddEditStoryScreen(
             }
         }
     ) { contentPadding ->
-        val story = viewModel.story.value
-        val isNewStory = remember { story.title.isEmpty() && story.description.isEmpty() }
-
         Column(
             Modifier
                 .fillMaxSize()

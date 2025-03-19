@@ -112,9 +112,7 @@ fun ListStoriesScreen(navController: NavController, storiesViewModel: ListStorie
                     ) { story ->
                         StoryCard(
                             title = story.title,
-                            time = "${story.time}h",
                             priority = if (story.priority == HighPriority) HighPriority else StandardPriority,
-                            category = story.category ?: "",
                             onEditClick = {
                                 navController.navigate(Screen.AddEditStoryScreen.route + "?storyId=${story.id}")
                             },

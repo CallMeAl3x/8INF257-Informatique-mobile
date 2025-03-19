@@ -24,9 +24,7 @@ import ca.uqac.stories.presentation.PriorityType
 @Composable
 fun StoryCard(
     title: String,
-    time: String,
     priority: PriorityType,
-    category: String,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -64,15 +62,6 @@ fun StoryCard(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
-                        )
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = time,
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            color = Color.Gray
                         )
                     )
                 }
