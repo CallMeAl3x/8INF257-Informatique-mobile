@@ -24,6 +24,8 @@ data class StoryVM(
                 title = entity.title,
                 description = entity.description,
                 done = entity.done,
+                date = entity.date,
+                category = entity.category,
                 priority = when (entity.priority) {
                     1 -> HighPriority
                     else -> StandardPriority

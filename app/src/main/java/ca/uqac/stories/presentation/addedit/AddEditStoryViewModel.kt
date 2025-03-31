@@ -24,17 +24,22 @@ class AddEditStoryViewModel(val dao: StoriesDao, storyId: Int = -1) : ViewModel(
                 _story.value = StoryVM(id = generateUniqueRandomId())
             } else {
                 val storyEntity = dao.getStory(storyId)
-                _story.value = storyEntity?.let { StoryVM.fromEntity(it) } ?: StoryVM(id = storyId)
+                if (storyEntity != null) {
+                    _story.value = StoryVM.fromEntity(storyEntity)
+                    Log.d("AddEditStoryViewModel", "Story loaded: ${_story.value}")
+                } else {
+                    Log.d("AddEditStoryViewModel", "Story not found for ID: $storyId")
+                    _story.value = StoryVM(id = storyId)
+                }
             }
-            Log.d("AddEditStoryViewModel", "Story: ${_story.value}")
         }
     }
 
     private suspend fun generateUniqueRandomId(): Int {
-        var id = Random.nextInt()
-        while (dao.getStory(id) != null) {
-            id = Random.nextInt()
-        }
+        var id: Int
+        do {
+            id = Random.nextInt(1, Int.MAX_VALUE)
+        } while (dao.getStory(id) != null)
         return id
     }
 
