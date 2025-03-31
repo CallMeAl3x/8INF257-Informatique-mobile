@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import ca.uqac.stories.navigation.Screen
+import ca.uqac.stories.presentation.HighPriority
+import ca.uqac.stories.presentation.LowPriority
+import ca.uqac.stories.presentation.StandardPriority
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -40,7 +43,14 @@ fun AddEditStoryScreen(
     val datePickerState = rememberDatePickerState()
 
     val categories = listOf("Aventure", "Science-fiction", "Horreur", "Comédie", "Drame")
+    val priorityCategories = listOf("Peu important", "Important", "Très important")
     var expanded by remember { mutableStateOf(false) }
+    var categoryExpanded by remember { mutableStateOf(false) }
+    val priorityText = when (story.priority) {
+        is HighPriority -> "Très important"
+        is StandardPriority -> "Important"
+        is LowPriority -> "Peu important"
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -184,6 +194,49 @@ fun AddEditStoryScreen(
                     },
                     dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
                 ) { DatePicker(state = datePickerState) }
+            }
+
+            ExposedDropdownMenuBox(
+                expanded = categoryExpanded,
+                onExpandedChange = { categoryExpanded = !categoryExpanded }
+            ) {
+                TextField(
+                    value = priorityText,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Importance") },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Ouvrir le menu"
+                        )
+                    },
+                    modifier = Modifier.menuAnchor().fillMaxWidth().padding(16.dp)
+                )
+
+                ExposedDropdownMenu(
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    priorityCategories.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(category) },
+                            onClick = {
+                                val priorityValue = when (category) {
+                                    "Très important" -> HighPriority
+                                    "Important" -> StandardPriority
+                                    "Peu important" -> LowPriority
+                                    else -> {
+                                        throw IllegalArgumentException("Invalid priority category: $category")
+                                    }
+                                }
+                                viewModel.onEvent(AddEditStoryEvent.EnteredPriority(priorityValue))
+                                categoryExpanded = false
+                            }
+                        )
+                    }
+                }
             }
 
             Row(

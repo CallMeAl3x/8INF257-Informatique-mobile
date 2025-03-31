@@ -36,6 +36,8 @@ fun ListStoriesScreen(navController: NavController, storiesViewModel: ListStorie
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var isExpanded by remember { mutableStateOf(true) } // State to track expanded/collapsed state
+
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { contentPadding ->
@@ -76,7 +78,6 @@ fun ListStoriesScreen(navController: NavController, storiesViewModel: ListStorie
                     .background(Color(0xFFB3D9FF), RoundedCornerShape(12.dp)),
                 contentPadding = PaddingValues(vertical = 12.dp)
             ) {
-                // Header item for a given day with expand/collapse toggle
                 item {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -104,7 +105,6 @@ fun ListStoriesScreen(navController: NavController, storiesViewModel: ListStorie
                     }
                 }
 
-                // Only display the story cards if the section is expanded
                 if (isExpanded) {
                     items(
                         items = storiesViewModel.stories.value,
@@ -112,7 +112,7 @@ fun ListStoriesScreen(navController: NavController, storiesViewModel: ListStorie
                     ) { story ->
                         StoryCard(
                             title = story.title,
-                            priority = if (story.priority == HighPriority) HighPriority else StandardPriority,
+                            priority = story.priority,
                             onEditClick = {
                                 navController.navigate(Screen.AddEditStoryScreen.route + "?storyId=${story.id}")
                             },

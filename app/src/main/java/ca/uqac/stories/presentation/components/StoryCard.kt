@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import ca.uqac.stories.presentation.HighPriority
+import ca.uqac.stories.presentation.LowPriority
+import ca.uqac.stories.presentation.StandardPriority
 import ca.uqac.stories.presentation.PriorityType
 
 @Composable
@@ -28,8 +30,18 @@ fun StoryCard(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
-    val priorityLabel = if (priority == HighPriority) "Très important" else "Important"
-    val priorityColor = if (priority == HighPriority) Color.Red else Color.Red.copy(alpha = 0.7F)
+    // Déterminer le libellé et la couleur de la priorité
+    val priorityLabel = when (priority) {
+        is HighPriority -> "Très important"
+        is StandardPriority -> "Important"
+        is LowPriority -> "Peu important"
+    }
+
+    val priorityColor = when (priority) {
+        is HighPriority -> Color.Red
+        is StandardPriority -> Color.Yellow
+        is LowPriority -> Color.Gray
+    }
 
     Row(
         modifier = Modifier
@@ -49,7 +61,8 @@ fun StoryCard(
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = "Important",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Green
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))

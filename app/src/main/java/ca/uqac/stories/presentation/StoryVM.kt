@@ -27,8 +27,9 @@ data class StoryVM(
                 date = entity.date,
                 category = entity.category,
                 priority = when (entity.priority) {
-                    1 -> HighPriority
-                    else -> StandardPriority
+                    2 -> HighPriority
+                    1 -> StandardPriority
+                    else -> LowPriority
                 }
             )
         }
@@ -41,8 +42,9 @@ data class StoryVM(
             description = this.description,
             done = this.done,
             priority = when (this.priority) {
-                is HighPriority -> 1
-                else -> 0
+                is HighPriority -> 2
+                is StandardPriority -> 1
+                is LowPriority -> 0
             },
             date = this.date,
             category = this.category
@@ -62,3 +64,8 @@ data object HighPriority : PriorityType(
 data object StandardPriority : PriorityType(
     Purple80, PurpleGrey40
 )
+
+data object LowPriority : PriorityType(
+    Color.Gray, Color.White
+)
+
