@@ -7,9 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ca.uqac.stories.data.source.StoriesDao
 import ca.uqac.stories.presentation.StoryVM
-import ca.uqac.stories.presentation.HighPriority
-import ca.uqac.stories.presentation.LowPriority
-import ca.uqac.stories.presentation.StandardPriority
 import ca.uqac.stories.utils.addOrUpdateStory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,6 +63,10 @@ class AddEditStoryViewModel(val dao: StoriesDao, storyId: Int = -1) : ViewModel(
 
             is AddEditStoryEvent.EnteredPriority -> {
                 _story.value = _story.value.copy(priority = event.priority)
+            }
+
+            is AddEditStoryEvent.EnteredHour -> {
+                _story.value = _story.value.copy(hour = event.hour, minute = event.minute)
             }
 
             AddEditStoryEvent.StoryDone -> {

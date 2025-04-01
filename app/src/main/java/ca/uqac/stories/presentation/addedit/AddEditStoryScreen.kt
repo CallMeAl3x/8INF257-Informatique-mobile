@@ -21,12 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import ca.uqac.stories.navigation.Screen
 import ca.uqac.stories.presentation.HighPriority
 import ca.uqac.stories.presentation.LowPriority
 import ca.uqac.stories.presentation.StandardPriority
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
@@ -51,6 +53,9 @@ fun AddEditStoryScreen(
         is StandardPriority -> "Important"
         is LowPriority -> "Peu important"
     }
+
+    var showTimePicker by remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState()
 
     Scaffold(
         floatingActionButton = {
@@ -132,7 +137,7 @@ fun AddEditStoryScreen(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.fillMaxWidth()) {
-                    categories.forEach { category ->
+                    categories.forEach { category -> 
                         DropdownMenuItem(
                             text = { Text(category) },
                             onClick = {
@@ -156,16 +161,24 @@ fun AddEditStoryScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Date:", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black), modifier = Modifier.weight(1f))
+                Text(
+                    "Date:",
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
+                    modifier = Modifier.weight(1f)
+                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickable { showDatePicker = true }
                 ) {
-                    Icon(imageVector = Icons.Filled.DateRange, contentDescription = "Select Date", tint = Color.Black)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Icon(
+                        imageVector = Icons.Filled.DateRange,
+                        contentDescription = "Select Date",
+                        tint = Color.Black
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = if (story.date.isNotEmpty()) {
                             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -173,6 +186,32 @@ fun AddEditStoryScreen(
                             localDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
                         } else {
                             "Select Date"
+                        },
+                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    "Heure:",
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { showTimePicker = true }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.DateRange,
+                        contentDescription = "Select Time",
+                        tint = Color.Black
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (story.hour != null && story.minute != null) {
+                            val localTime = LocalTime.of(story.hour, story.minute)
+                            localTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                        } else {
+                            "Select Time"
                         },
                         style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
                     )
@@ -194,6 +233,44 @@ fun AddEditStoryScreen(
                     },
                     dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
                 ) { DatePicker(state = datePickerState) }
+            }
+
+            if (showTimePicker) {
+                Dialog(onDismissRequest = { showTimePicker = false }) {
+                    val timePickerState = rememberTimePickerState(
+                        initialHour = story.hour ?: 0,
+                        initialMinute = story.minute ?: 0
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TimePicker(state = timePickerState)
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            TextButton(onClick = { showTimePicker = false }) {
+                                Text("Cancel")
+                            }
+                            TextButton(onClick = {
+                                viewModel.onEvent(
+                                    AddEditStoryEvent.EnteredHour(
+                                        timePickerState.hour,
+                                        timePickerState.minute
+                                    )
+                                )
+                                showTimePicker = false
+                            }) {
+                                Text("OK")
+                            }
+                        }
+                    }
+                }
             }
 
             ExposedDropdownMenuBox(
@@ -219,7 +296,7 @@ fun AddEditStoryScreen(
                     onDismissRequest = { categoryExpanded = false },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    priorityCategories.forEach { category ->
+                    priorityCategories.forEach { category -> 
                         DropdownMenuItem(
                             text = { Text(category) },
                             onClick = {

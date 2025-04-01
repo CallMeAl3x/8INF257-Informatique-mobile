@@ -21,14 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import ca.uqac.stories.presentation.components.StoryCard
 import ca.uqac.stories.navigation.Screen
-import ca.uqac.stories.presentation.HighPriority
-import ca.uqac.stories.presentation.StandardPriority
 import kotlinx.coroutines.launch
 
 @Composable

@@ -15,7 +15,9 @@ data class StoryVM(
     val title: String = "",
     val description: String = "",
     val done: Boolean = false,
-    val priority: PriorityType = StandardPriority
+    val priority: PriorityType = StandardPriority,
+    val hour: Int = 0,
+    val minute: Int = 0
 ) {
     companion object {
         fun fromEntity(entity: Story): StoryVM {
@@ -26,11 +28,13 @@ data class StoryVM(
                 done = entity.done,
                 date = entity.date,
                 category = entity.category,
+                hour = entity.hour,
+                minute = entity.minute,
                 priority = when (entity.priority) {
                     2 -> HighPriority
                     1 -> StandardPriority
                     else -> LowPriority
-                }
+                },
             )
         }
     }
@@ -41,6 +45,8 @@ data class StoryVM(
             title = this.title,
             description = this.description,
             done = this.done,
+            hour = this.hour,
+            minute = this.minute,
             priority = when (this.priority) {
                 is HighPriority -> 2
                 is StandardPriority -> 1
