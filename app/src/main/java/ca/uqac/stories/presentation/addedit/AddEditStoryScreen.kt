@@ -31,6 +31,20 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
+import java.io.File
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import androidx.compose.material.icons.filled.Place
+import org.osmdroid.views.MapView
+import android.view.MotionEvent
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,8 +54,10 @@ fun AddEditStoryScreen(
 ) {
     val story = viewModel.story.value
     val isNewStory = viewModel.isNewStory.value
+    val context = LocalContext.current
 
     var showDatePicker by remember { mutableStateOf(false) }
+    var showMapDialog by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
     val categories = listOf("Aventure", "Science-fiction", "Horreur", "Comédie", "Drame")
@@ -56,6 +72,28 @@ fun AddEditStoryScreen(
 
     var showTimePicker by remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState()
+
+    LaunchedEffect(Unit) {
+        Configuration.getInstance().apply {
+            userAgentValue = context.packageName
+            osmdroidBasePath = File(context.cacheDir, "osmdroid").also { it.mkdirs() }
+            osmdroidTileCache = File(osmdroidBasePath, "tiles").also { it.mkdirs() }
+        }
+    }
+
+    // Gestion des permissions
+    val locationPermissions = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions.all { it.value }) {
+            showMapDialog = true
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -156,6 +194,32 @@ fun AddEditStoryScreen(
                 singleLine = false,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
                 modifier = Modifier.fillMaxWidth().padding(16.dp).clip(RoundedCornerShape(8.dp))
+            )
+            OutlinedTextField(
+                value = story.location?.let { geoPoint ->
+                    "Lat: ${"%.4f".format(geoPoint.latitude)}, Lon: ${"%.4f".format(geoPoint.longitude)}"
+                } ?: "Aucun lieu sélectionné",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Localisation") },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = "Choisir un lieu"
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clickable {
+                        if (locationPermissions.all { permission ->
+                                context.checkSelfPermission(permission) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                            }) {
+                            showMapDialog = true
+                        } else {
+                            locationPermissionLauncher.launch(locationPermissions)
+                        }
+                    }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -326,5 +390,54 @@ fun AddEditStoryScreen(
 
             BackHandler { navController.navigateUp() }
         }
+    }
+    if (showMapDialog) {
+        AlertDialog(
+            onDismissRequest = { showMapDialog = false },
+            title = { Text("Sélectionnez un lieu") },
+            text = {
+                AndroidView(
+                    factory = { ctx ->
+                        MapView(ctx).apply {
+                            setTileSource(TileSourceFactory.MAPNIK)
+                            controller.setZoom(15.0)
+                            controller.setCenter(GeoPoint(48.8566, 2.3522))
+
+                            val marker = Marker(this).apply {
+                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                title = "Position sélectionnée"
+                            }
+                            overlays.add(marker)
+
+                            // Méthode corrigée pour gérer les clics
+                            setOnTouchListener { _, event ->
+                                if (event.action == MotionEvent.ACTION_UP) {
+                                    val iGeoPoint = projection.fromPixels(event.x.toInt(), event.y.toInt())
+                                    val geoPoint = GeoPoint(iGeoPoint.latitude, iGeoPoint.longitude)
+                                    marker.position = geoPoint
+                                    viewModel.onEvent(AddEditStoryEvent.EnteredLocation(geoPoint))
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp)
+                )
+            },
+            confirmButton = {
+                Button(onClick = { showMapDialog = false }) {
+                    Text("Confirmer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showMapDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
     }
 }

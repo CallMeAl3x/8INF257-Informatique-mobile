@@ -7,6 +7,7 @@ import ca.uqac.stories.ui.theme.Purple80
 import ca.uqac.stories.ui.theme.PurpleGrey40
 import ca.uqac.stories.ui.theme.PurpleGrey80
 import kotlin.random.Random
+import org.osmdroid.util.GeoPoint
 
 data class StoryVM(
     val id: Int = Random.nextInt(),
@@ -17,7 +18,8 @@ data class StoryVM(
     val done: Boolean = false,
     val priority: PriorityType = StandardPriority,
     val hour: Int = 0,
-    val minute: Int = 0
+    val minute: Int = 0,
+    val location: GeoPoint? = null
 ) {
     companion object {
         fun fromEntity(entity: Story): StoryVM {
@@ -30,6 +32,7 @@ data class StoryVM(
                 category = entity.category,
                 hour = entity.hour,
                 minute = entity.minute,
+                location = entity.location,
                 priority = when (entity.priority) {
                     2 -> HighPriority
                     1 -> StandardPriority
@@ -47,6 +50,7 @@ data class StoryVM(
             done = this.done,
             hour = this.hour,
             minute = this.minute,
+            location = this.location,
             priority = when (this.priority) {
                 is HighPriority -> 2
                 is StandardPriority -> 1

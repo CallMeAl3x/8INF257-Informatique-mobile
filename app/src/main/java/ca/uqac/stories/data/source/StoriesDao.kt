@@ -3,7 +3,9 @@ package ca.uqac.stories.data.source
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.OnConflictStrategy
 import androidx.room.Upsert
+import androidx.room.Insert
 import ca.uqac.stories.domain.model.Story
 import kotlinx.coroutines.flow.Flow
 
@@ -16,6 +18,9 @@ interface StoriesDao {
     // Retrieve a single story by its ID
     @Query("SELECT * FROM stories WHERE id = :id")
     suspend fun getStory(id: Int): Story?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStory(story: Story)
 
     // Insert or update a story in the database
     @Upsert

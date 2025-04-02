@@ -69,6 +69,10 @@ class AddEditStoryViewModel(val dao: StoriesDao, storyId: Int = -1) : ViewModel(
                 _story.value = _story.value.copy(hour = event.hour, minute = event.minute)
             }
 
+            is AddEditStoryEvent.EnteredLocation -> {
+                _story.value = _story.value.copy(location = event.location)
+            }
+
             AddEditStoryEvent.StoryDone -> {
                 _story.value = _story.value.copy(done = !_story.value.done)
             }

@@ -32,14 +32,6 @@ import ca.uqac.stories.navigation.Screen
 
 class MainActivity : ComponentActivity() {
 
-    private val db by lazy {
-        Room.databaseBuilder(
-            applicationContext,
-            StoriesDatabase::class.java,
-            StoriesDatabase.DATABASE_NAME
-        ).build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -54,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val db = StoriesDatabase.getInstance(applicationContext) // Utilisez le singleton
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         val navController = rememberNavController()
 
@@ -71,7 +64,7 @@ class MainActivity : ComponentActivity() {
                             composable(
                                 route = Screen.AddEditStoryScreen.route + "?storyId={storyId}",
                                 arguments = listOf(
-                                    navArgument(name = "storyId" ) {
+                                    navArgument(name = "storyId") {
                                         type = NavType.IntType
                                         defaultValue = -1
                                     }
