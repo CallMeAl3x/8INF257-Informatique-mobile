@@ -29,6 +29,12 @@ import ca.uqac.stories.presentation.addedit.AddEditStoryScreen
 import ca.uqac.stories.presentation.addedit.AddEditStoryViewModel
 import ca.uqac.stories.ui.theme.StoriesTheme
 import ca.uqac.stories.navigation.Screen
+import ca.uqac.stories.presentation.components.scheduleHourlyCheck
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
 
@@ -80,6 +86,15 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                scheduleHourlyCheck(this)
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 123)
+            }
+        } else {
+            scheduleHourlyCheck(this)
         }
     }
 }

@@ -29,4 +29,10 @@ interface StoriesDao {
     // Delete a story from the database
     @Delete
     suspend fun deleteStory(story: Story)
+
+    @Query(" SELECT * FROM stories WHERE location IS NOT NULL AND ABS((SUBSTR(location, 1, INSTR(location, ',')-1)) - :currentLat) < :radius AND ABS((SUBSTR(location, INSTR(location, ',')+1)) - :currentLon) < :radius")
+    fun getStoriesNearLocation(currentLat: Double, currentLon: Double, radius: Double): List<Story>
+
+    @Query("SELECT * FROM stories WHERE hour = :currentHour AND minute = :currentMinute")
+    fun getStoriesByTime(currentHour: Int, currentMinute: Int): List<Story>
 }
