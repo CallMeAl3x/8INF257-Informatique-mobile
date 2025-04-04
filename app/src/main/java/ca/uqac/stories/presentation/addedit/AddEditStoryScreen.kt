@@ -44,6 +44,7 @@ import android.Manifest
 import androidx.compose.material.icons.filled.Place
 import org.osmdroid.views.MapView
 import android.view.MotionEvent
+import android.util.Log
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -195,6 +196,7 @@ fun AddEditStoryScreen(
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
                 modifier = Modifier.fillMaxWidth().padding(16.dp).clip(RoundedCornerShape(8.dp))
             )
+
             OutlinedTextField(
                 value = story.location?.let { geoPoint ->
                     "Lat: ${"%.4f".format(geoPoint.latitude)}, Lon: ${"%.4f".format(geoPoint.longitude)}"
@@ -210,13 +212,16 @@ fun AddEditStoryScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(8.dp)
                     .clickable {
+                        Log.d("DEBUG", "Champ cliqué !")
                         if (locationPermissions.all { permission ->
                                 context.checkSelfPermission(permission) == android.content.pm.PackageManager.PERMISSION_GRANTED
                             }) {
                             showMapDialog = true
+                            Log.d("DEBUG", "showMapDialog mis à true")
                         } else {
+                            Log.d("DEBUG", "Permissions non accordées")
                             locationPermissionLauncher.launch(locationPermissions)
                         }
                     }
@@ -390,6 +395,9 @@ fun AddEditStoryScreen(
 
             BackHandler { navController.navigateUp() }
         }
+    }
+    LaunchedEffect(showMapDialog) {
+        Log.d("DEBUG", "showMapDialog: $showMapDialog")
     }
     if (showMapDialog) {
         AlertDialog(

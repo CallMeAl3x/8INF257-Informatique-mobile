@@ -16,6 +16,8 @@ suspend fun logDatabaseState(dao: StoriesDao) {
                     description='${story.description}', 
                     done=${story.done}, 
                     priority=${story.priority},
+                    hour=${story.hour},
+                    minute=${story.minute},
                     location=${story.location?.let { "Lat:${it.latitude}, Lon:${it.longitude}" } ?: "null"}
                 )
             """.trimIndent())
