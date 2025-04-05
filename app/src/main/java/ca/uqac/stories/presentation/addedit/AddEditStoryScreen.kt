@@ -197,19 +197,7 @@ fun AddEditStoryScreen(
                 modifier = Modifier.fillMaxWidth().padding(16.dp).clip(RoundedCornerShape(8.dp))
             )
 
-            OutlinedTextField(
-                value = story.location?.let { geoPoint ->
-                    "Lat: ${"%.4f".format(geoPoint.latitude)}, Lon: ${"%.4f".format(geoPoint.longitude)}"
-                } ?: "Aucun lieu sélectionné",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Localisation") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Place,
-                        contentDescription = "Choisir un lieu"
-                    )
-                },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
@@ -225,7 +213,25 @@ fun AddEditStoryScreen(
                             locationPermissionLauncher.launch(locationPermissions)
                         }
                     }
-            )
+            ) {
+                OutlinedTextField(
+                    value = story.location?.let { geoPoint ->
+                        "Lat: ${"%.4f".format(geoPoint.latitude)}, Lon: ${"%.4f".format(geoPoint.longitude)}"
+                    } ?: "Aucun lieu sélectionné",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Localisation") },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Place,
+                            contentDescription = "Choisir un lieu"
+                        )
+                    },
+                    enabled = false, // Empêche l'interaction directe
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
