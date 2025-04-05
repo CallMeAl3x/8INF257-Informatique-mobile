@@ -25,7 +25,7 @@ fun scheduleHourlyCheck(context: Context) {
     alarmManager.setRepeating(
         AlarmManager.RTC_WAKEUP,
         calendar.timeInMillis,
-        AlarmManager.INTERVAL_HOUR, // Vérifie toutes les heures
+        60 * 1000L,
         pendingIntent
     )
 }
