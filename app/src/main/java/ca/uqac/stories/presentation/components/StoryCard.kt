@@ -104,14 +104,7 @@ fun StoryCard(
             IconButton(onClick = onEditClick) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit",
-                    tint = Color.Black
-                )
-            }
-            IconButton(onClick = onDeleteClick) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = "Supprimer",
                     tint = Color.Black
                 )
             }

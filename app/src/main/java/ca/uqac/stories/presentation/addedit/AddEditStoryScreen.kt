@@ -72,7 +72,6 @@ fun AddEditStoryScreen(
     }
 
     var showTimePicker by remember { mutableStateOf(false) }
-    val timePickerState = rememberTimePickerState()
 
     LaunchedEffect(Unit) {
         Configuration.getInstance().apply {
@@ -286,7 +285,7 @@ fun AddEditStoryScreen(
                             val localTime = LocalTime.of(story.hour, story.minute)
                             localTime.format(DateTimeFormatter.ofPattern("HH:mm"))
                         } else {
-                            "Select Time"
+                            "Séléctionner l'heure"
                         },
                         style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
                     )
@@ -306,7 +305,7 @@ fun AddEditStoryScreen(
                             showDatePicker = false
                         }) { Text("OK") }
                     },
-                    dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
+                    dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Annuler") } }
                 ) { DatePicker(state = datePickerState) }
             }
 
