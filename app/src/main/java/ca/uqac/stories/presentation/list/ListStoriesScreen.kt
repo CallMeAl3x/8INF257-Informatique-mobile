@@ -1,18 +1,18 @@
 package ca.uqac.stories.presentation.list
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,6 +90,20 @@ fun ListStoriesScreen(navController: NavController, storiesViewModel: ListStorie
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.AddEditStoryScreen.route) },
+                modifier = Modifier.size(50.dp),
+                containerColor = Color.hsl(215f, 0.37f, 0.66f, 1f),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add a story",
+                    tint = Color.Black
+                )
+            }
+        }
     ) { contentPadding ->
         Column(
             modifier = Modifier
@@ -285,5 +299,5 @@ fun getTodayDate(): String {
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH) + 1
     val day = calendar.get(Calendar.DAY_OF_MONTH)
-    return "$year-$month-$day"
+    return String.format("%04d-%02d-%02d", year, month, day) // Ensure leading zeros
 }
