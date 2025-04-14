@@ -61,7 +61,7 @@ fun AddEditStoryScreen(
     var showMapDialog by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
-    val categories = listOf("Aventure", "Science-fiction", "Horreur", "Comédie", "Drame")
+    val categories = listOf("Santé", "Travail", "Loisir")
     val priorityCategories = listOf("Peu important", "Important", "Très important")
     var expanded by remember { mutableStateOf(false) }
     var categoryExpanded by remember { mutableStateOf(false) }
